@@ -23,6 +23,7 @@ def filter_datum(fields: List[str], redaction: str,
         message = re.sub(pattern, field + "=" + redaction + separator, message)
     return message
 
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -41,5 +42,3 @@ class RedactingFormatter(logging.Formatter):
             Args:
             @record - loggings LogRecord
         """
-
-
