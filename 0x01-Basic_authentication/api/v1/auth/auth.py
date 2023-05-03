@@ -2,6 +2,7 @@
 """ API authentication class """
 import flask
 from typing import List, TypeVar
+import re
 
 
 class Auth():
@@ -11,7 +12,16 @@ class Auth():
         """ require authentication from user
         Return:
         """
-        return False
+        if path is None:
+            return True
+        if (excluded_paths is None or excluded_paths == []):
+            return True
+        else:
+            for e_path in excluded_paths:
+                pattern = r'{}/?$'.format(re.escape(e_path))
+                if re.match(path, pattern):
+                    return False
+            return True
 
     def authorization_header(self, request=None) -> str:
         """ authorization_header
