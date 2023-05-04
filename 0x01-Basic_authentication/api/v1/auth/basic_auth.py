@@ -59,7 +59,7 @@ class BasicAuth(Auth):
             return (None, None)
         if ':' not in decoded_base64_authorization_header:
             return (None, None)
-        pattern = r'(.+):(.+)'
+        pattern = r'([^:]+):(.+)'
         match = re.search(pattern, decoded_base64_authorization_header)
         if match:
             user_email = match.group(1)
