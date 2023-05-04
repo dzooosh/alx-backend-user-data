@@ -65,7 +65,7 @@ class BasicAuth(Auth):
             user_email = match.group(1)
             user_password = match.group(2)
             return (user_email, user_password)
-        
+
     def user_object_from_credentials(self, user_email: str,
                                      user_pwd: str) -> TypeVar('User'):
         """ Returns the User instance based on Email and Password
