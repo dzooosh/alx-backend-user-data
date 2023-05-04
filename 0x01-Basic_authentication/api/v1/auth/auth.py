@@ -23,6 +23,9 @@ class Auth():
                 pattern = r'{}/?$'.format(re.escape(e_path))
                 if re.match(path, pattern):
                     return False
+                if e_path[-1] == "*":
+                    if path.startswith(e_path[:-1]):
+                        return False
             return True
 
     def authorization_header(self, request=None) -> str:
