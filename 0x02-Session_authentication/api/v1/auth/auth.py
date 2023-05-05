@@ -3,7 +3,7 @@
 import flask
 from typing import List, TypeVar
 import re
-
+from os import getenv
 
 class Auth():
     """ API authentication
@@ -46,3 +46,11 @@ class Auth():
         """ checks the current user
         """
         return None
+
+    def session_cookie(self, request=None):
+        """ Returns a cookie value from a request
+        """
+        if request is None:
+            return None
+        cookie_name = getenv("SESSION_NAME")
+        return request.COOKIES.get(cookie_name, None)
