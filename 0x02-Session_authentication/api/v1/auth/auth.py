@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ API authentication class """
-import flask
+from flask import request
 from typing import List, TypeVar
 import re
 from os import getenv
@@ -53,5 +53,5 @@ class Auth():
         if request is None:
             return None
         cookie_name = getenv("SESSION_NAME")
-        cookie_value = request.COOKIES.get(cookie_name, None)
+        cookie_value = request.cookies.get(cookie_name, None)
         return cookie_value
