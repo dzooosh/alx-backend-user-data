@@ -5,6 +5,7 @@ from typing import List, TypeVar
 import re
 from os import getenv
 
+
 class Auth():
     """ API authentication
     """
