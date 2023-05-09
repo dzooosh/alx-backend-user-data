@@ -41,13 +41,15 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, email) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """ finds user by any stated parameter
         """
-        if not email.startswith('email'):
+        param = kwargs.get('email')
+
+        if param is None:
             raise InvalidRequestError
 
-        result = self._session.query(User).filter_by(email=email).first()
+        result = self._session.query(User).filter_by(email=param).first()
         if result:
             return result
         else:
