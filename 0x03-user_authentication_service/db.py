@@ -44,7 +44,7 @@ class DB:
     def find_user_by(self, email) -> User:
         """ finds user by any stated parameter
         """
-        if not email:
+        if not email.startswith('email'):
             raise InvalidRequestError
 
         result = self._session.query(User).filter_by(email=email).first()
