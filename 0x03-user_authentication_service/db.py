@@ -41,11 +41,10 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, email) -> User:
+    def find_user_by(self, email="") -> User:
         """ finds user by any stated parameter
         """
-        pattern = r'email=.+'
-        if not re.match(pattern, email):
+        if not email:
             raise InvalidRequestError
 
         result = self._session.query(User).filter_by(email=email).first()
