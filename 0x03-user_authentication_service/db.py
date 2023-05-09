@@ -41,7 +41,7 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, email: str) -> User:
+    def find_user_by(self, email) -> User:
         """ finds user by any stated parameter
         """
         if not email:
