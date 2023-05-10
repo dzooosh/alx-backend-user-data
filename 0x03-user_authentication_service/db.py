@@ -8,6 +8,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 import re
+import bcrypt
 
 from user import Base, User
 
