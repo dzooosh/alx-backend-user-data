@@ -34,7 +34,12 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """Add a new user
+        """Add a new user to database
+        Args:
+            email (str): user's email address
+            hashed_password (str): password hashed by bcrypt's hashpw
+        Return:
+            Newly created User object
         """
         user = User(email=email, hashed_password=hashed_password)
         self._session.add(user)
@@ -43,14 +48,16 @@ class DB:
 
     def find_user_by(self, **kwargs) -> User:
         """ finds user by any stated parameter
+         Args:
+            attributes (dict): a dictionary of attributes to match the user
+        Return:
+            matching user or raise error
         """
-        param = kwargs.get('email')
+        users = self._session.query(User)
+        for k, v in kwargs.items():
+            if k not in User.__dict__:
+                raise InvalidRequestError
+            if getattr(users, k) == v:
+                return users
+        raise NoResultFound
 
-        if param is None:
-            raise InvalidRequestError
-
-        result = self._session.query(User).filter_by(email=param).first()
-        if result:
-            return result
-        else:
-            raise NoResultFound
