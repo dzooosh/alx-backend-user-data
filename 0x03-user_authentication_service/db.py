@@ -60,4 +60,3 @@ class DB:
             if getattr(users, k) == v:
                 return users
         raise NoResultFound
-
