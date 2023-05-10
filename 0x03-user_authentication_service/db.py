@@ -55,9 +55,24 @@ class DB:
         """
         users = self._session.query(User)
         for k, v in kwargs.items():
-            if k not in User.__dict__:
+            if not hasattr(User, k):
                 raise InvalidRequestError
             for user in users:
                 if getattr(user, k) == v:
                     return user
         raise NoResultFound
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """ Updates user database using user_id to search
+        Args:
+            user_id: User ID which is unique to one user
+            attributes (dict): a dictionary of attributes to update user data
+        Return:
+            None or raise error
+        """
+        user = self.find_user_by(id=user_id)
+        for k, v in kwargs.items():
+            if not hasattr(user, k):
+                raise ValueError
+            setattr(user, k, v)
+        self._session.commit()
