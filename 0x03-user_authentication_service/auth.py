@@ -6,6 +6,7 @@ from db import DB, User
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 import uuid
+from typing import Union, TypeVar
 
 
 def _hash_password(password: str) -> bytes:
@@ -71,7 +72,7 @@ class Auth:
         except (NoResultFound):
             return False
 
-    def create_session(self, email: str) -> str:
+    def create_session(self, email: str) -> Union[None, str]:
         """ Get session ID
         Args:
             email (str): email string
@@ -81,7 +82,7 @@ class Auth:
         try:
             user = self._db.find_user_by(email=email)
             session_id = _generate_uuid()
-            setattr(user, 'session_id', session_id)
-            return getattr(user, 'session_id')
-        except (NoResultFound):
+            self._db.update_user(user.id, session_id=session_id)
+            return session_id
+        except NoResultFound:
             return None
