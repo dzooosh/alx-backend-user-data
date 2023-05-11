@@ -9,14 +9,14 @@ AUTH = Auth()
 
 
 @app.route('/', methods=['GET'])
-def index():
+def index() -> str:
     """ return a JSON message
     """
     return jsonify({"message": "Bienvenue"})
 
 
 @app.route('/users', methods=['GET', 'POST'], strict_slashes=False)
-def users():
+def users() -> str:
     """ returns JSON of the new user or alert if existing
     """
     email = request.form.get('email')
@@ -33,7 +33,7 @@ def users():
         return jsonify({'error': 'Email and password are required.'}), 400
 
 
-@app.route('/sessions', methods=['POST'], strict_slashes=False)
+@app.route('/sessions', methods=["POST"], strict_slashes=False)
 def login():
     """ login route logic
     """
@@ -44,27 +44,39 @@ def login():
         if not AUTH.valid_login(email, password):
             # User is not authenticated
             abort(401)
-        else:
-            # User is authenticated
-            session_id = AUTH.create_session(email)
-            response = jsonify({"email": email, "message": "logged in"})
-            response.set_cookie("session_id", session_id)
-            return response
+        # User is authenticated
+        session_id = AUTH.create_session(email)
+        response = jsonify({"email": email, "message": "logged in"})
+        response.set_cookie("session_id", session_id)
+        return response
 
 
-@app.route('/sessions', methods=['GET'], strict_slashes=False)
+@app.route('/sessions', methods=["DELETE"], strict_slashes=False)
 def logout():
     """ logout logic
     """
-    session_id = request.form.get('session_id')
-    if session_id:
+    session_id = request.cookies.get('session_id', None)
+    if session_id is not None:
         # Session id is present
-        if AUTH.delete_session(session_id):
-            # Session is deleted
-            redirect(url_for('index'))
-        else:
-            abort(403)
+        user = AUTH.get_user_from_session_id(session_id)
+        # Destroy the session
+        if user:
+            AUTH.destroy_session(user.id)
+            redirect('/')
+    # respond with a 403 HTTP status if any step is None
+    abort(403)
 
+
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile():
+    """ profile route logic
+    """
+    session_id = request.cookies.get('session_id', None)
+    user = AUTH.get_user_from_session_id(session_id)
+    if user is not None and session_id is not None:
+        return jsonify({"email": user.email}), 200
+    else:
+        abort(403)
 
 
 if __name__ == "__main__":
