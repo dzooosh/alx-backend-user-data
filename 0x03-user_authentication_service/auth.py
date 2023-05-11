@@ -4,6 +4,7 @@
 import bcrypt
 from db import DB, User
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
 
 def _hash_password(password: str) -> bytes:
@@ -45,3 +46,20 @@ class Auth:
         except NoResultFound:
             return self._db.add_user(email, _hash_password(password))
         raise ValueError("User {} already exists".format(user.email))
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """ validates credentials
+        Args:
+            email (str): email to validate
+            password (str): password to validate
+        Returns:
+            True - if it matches with user details
+            False - if it does not match
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            # use bcrypt.checkpw to check the password with password in db
+            return bcrypt.checkpw(password.encode('utf-8'),
+                                  getattr(user, 'hashed_password'))
+        except (NoResultFound, InvalidRequestError):
+            return False
