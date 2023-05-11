@@ -2,8 +2,7 @@
 """ Basic Flask app
 """
 from auth import Auth
-from flask import Flask, jsonify, request, abort
-
+from flask import Flask, jsonify, request, abort, redirect, url_for
 
 app = Flask(__name__)
 AUTH = Auth()
@@ -51,6 +50,21 @@ def login():
             response = jsonify({"email": email, "message": "logged in"})
             response.set_cookie("session_id", session_id)
             return response
+
+
+@app.route('/sessions', methods=['GET'], strict_slashes=False)
+def logout():
+    """ logout logic
+    """
+    session_id = request.form.get('session_id')
+    if session_id:
+        # Session id is present
+        if AUTH.delete_session(session_id):
+            # Session is deleted
+            redirect(url_for('index'))
+        else:
+            abort(403)
+
 
 
 if __name__ == "__main__":
