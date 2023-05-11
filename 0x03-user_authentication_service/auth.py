@@ -68,5 +68,20 @@ class Auth:
             # use bcrypt.checkpw to check the password with password in db
             return bcrypt.checkpw(password.encode('utf-8'),
                                   getattr(user, 'hashed_password'))
-        except (NoResultFound, InvalidRequestError):
+        except (NoResultFound):
             return False
+
+    def create_session(self, email: str) -> str:
+        """ Get session ID
+        Args:
+            email (str): email string
+        Returns:
+            session ID (str)
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            session_id = _generate_uuid()
+            setattr(user, 'session_id', session_id)
+            return getattr(user, 'session_id')
+        except (NoResultFound):
+            return None
