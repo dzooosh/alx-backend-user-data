@@ -3,7 +3,7 @@
 
 import bcrypt
 from db import DB, User
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def _hash_password(password: str) -> bytes:
