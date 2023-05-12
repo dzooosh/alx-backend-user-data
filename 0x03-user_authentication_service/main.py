@@ -16,7 +16,7 @@ def register_user(email: str, password: str) -> None:
     """
     payload = {'email': email, 'password': password}
     r = requests.post('http://127.0.0.1:5000/users',
-                         data=payload)
+                      data=payload)
     if r.status_code == 200:
         assert (r.json() == {"email": email, "message": "user created"})
     else:
