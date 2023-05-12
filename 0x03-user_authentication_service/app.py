@@ -2,7 +2,8 @@
 """ Basic Flask app
 """
 from auth import Auth
-from flask import Flask, jsonify, request, abort, redirect, url_for
+from flask import (Flask, jsonify, request,
+                   abort, redirect, url_for, make_response)
 
 app = Flask(__name__)
 AUTH = Auth()
@@ -39,30 +40,28 @@ def login():
     """
     email = request.form.get('email')
     password = request.form.get('password')
-    if email and password:
+    if email is not None and password is not None:
         # Email and Password are present
         if not AUTH.valid_login(email, password):
             # User is not authenticated
             abort(401)
         # User is authenticated
         session_id = AUTH.create_session(email)
-        response = jsonify({"email": email, "message": "logged in"})
+        response = make_response(jsonify({"email": email, "message": "logged in"}))
         response.set_cookie("session_id", session_id)
         return response
 
 
-@app.route('/sessions', methods=["DELETE"], strict_slashes=False)
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
 def logout():
     """ logout logic
     """
     session_id = request.cookies.get('session_id', None)
-    if session_id is not None:
-        # Session id is present
-        user = AUTH.get_user_from_session_id(session_id)
-        # Destroy the session
-        if user:
-            AUTH.destroy_session(user.id)
-            redirect('/')
+    user = AUTH.get_user_from_session_id(session_id)
+    # Destroy the session
+    if user is not None:
+        AUTH.destroy_session(user.id)
+        redirect(url_for('index'))
     # respond with a 403 HTTP status if any step is None
     abort(403)
 
@@ -92,7 +91,7 @@ def get_reset_password_token() -> str:
 
 
 @app.route('/reset_password', methods=['PUT'], strict_slashes=False)
-def update_password():
+def update_password() -> str:
     """ updates the user's password
     """
     email = request.form.get('email')
